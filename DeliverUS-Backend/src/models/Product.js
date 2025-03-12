@@ -26,6 +26,7 @@ const loadModel = (sequelize, DataTypes) => {
     order: DataTypes.INTEGER,
     availability: DataTypes.BOOLEAN,
     restaurantId: DataTypes.INTEGER,
+    visibleUntil: DataTypes.DATE,
     productCategoryId: DataTypes.INTEGER
   }, {
     sequelize,
