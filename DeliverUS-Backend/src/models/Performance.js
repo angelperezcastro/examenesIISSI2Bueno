@@ -19,7 +19,7 @@ const loadModel = (sequelize, DataTypes) => {
     restaurantId: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Performances'
+    modelName: 'Performance'
   })
   return Performance
 }
