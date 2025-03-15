@@ -57,6 +57,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: new Date()
+      },
+      basePrice: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0.0
       }
     })
   },
