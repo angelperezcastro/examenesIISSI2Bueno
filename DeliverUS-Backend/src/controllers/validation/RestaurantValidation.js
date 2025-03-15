@@ -49,7 +49,7 @@ const update = [
   check('logo').custom((value, { req }) => {
     return checkFileMaxSize(req, 'logo', maxFileSize)
   }).withMessage('Maximum file size of ' + maxFileSize / 1000000 + 'MB'),
-  check('perentage').exists().isFloat({ min: -5, max: 5 }).toFloat()
+  check('percentage').exists().isFloat({ min: -5, max: 5 }).toFloat()
 ]
 
 export { create, update }

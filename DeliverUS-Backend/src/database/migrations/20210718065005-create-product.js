@@ -60,7 +60,7 @@ module.exports = {
       },
       basePrice: {
         type: Sequelize.DOUBLE,
-        defaultValue: 0.0
+        allowNull: false
       }
     })
   },
