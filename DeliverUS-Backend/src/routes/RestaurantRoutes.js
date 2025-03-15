@@ -62,5 +62,13 @@ const loadFileRoutes = function (app) {
       checkEntityExists(Restaurant, 'restaurantId'),
       RestaurantMiddleware.checkRestaurantOwnership,
       OrderController.analytics)
+  app.route('/restaurants/:restaurantId/togglePinned')
+    .patch(
+      isLoggedIn, // Should return 401 if not logged in
+      hasRole('owner'), // Should return 403 when logged in as a customer
+      checkEntityExists(Restaurant, 'restaurantId'), // Should return 403 when trying to pin a restaurant that is not yours
+      RestaurantMiddleware.checkRestaurantOwnership,
+      RestaurantController.togglePinned
+    )
 }
 export default loadFileRoutes

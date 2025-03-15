@@ -1,4 +1,5 @@
-import { Restaurant, Product, RestaurantCategory, ProductCategory } from '../models/models.js'
+import { Restaurant, Product, RestaurantCategory, ProductCategory, sequelizeSession } from '../models/models.js'
+import { Sequelize } from 'sequelize'
 
 const index = async function (req, res) {
   try {
@@ -21,24 +22,51 @@ const index = async function (req, res) {
 
 const indexOwner = async function (req, res) {
   try {
-    const restaurants = await Restaurant.findAll(
-      {
-        attributes: { exclude: ['userId'] },
-        where: { userId: req.user.id },
-        include: [{
-          model: RestaurantCategory,
-          as: 'restaurantCategory'
-        }]
-      })
+    const pinnedRestaurants = await getPinnedRestaurants(req)
+    const notPinnedRestaurants = await getNotPinnedRestaurants(req)
+    const restaurants = (pinnedRestaurants, notPinnedRestaurants)
     res.json(restaurants)
   } catch (err) {
     res.status(500).send(err)
   }
 }
+async function getPinnedRestaurants (req) {
+  return await Restaurant.findAll({
+    attributes: { exclude: ['userId'] },
+    where: {
+      userId: req.user.id, // Filter by the authenticated user's userId
+      pinnedAt: {
+        [Sequelize.Op.not]: null // Filter by pinnedAt not being null
+      }
+    },
+    order: [['pinnedAt', 'ASC']], // Order the results by pinnedAt in ascending order
+    include: [{
+      model: RestaurantCategory,
+      as: 'restaurantCategory'
+    }
+    ]
+  })
+}
+
+async function getNotPinnedRestaurants (req) {
+  return await Restaurant.findAll({
+    attributes: { exclude: ['userId'] },
+    where: {
+      userId: req.user.id,
+      // The `pinnedAt` attribute of the restaurant is null
+      pinnedAt: null // Filtrar por 'pinnedAt' nulo
+    },
+    include: [{
+      model: RestaurantCategory,
+      as: 'restaurantCategory'
+    }]
+  })
+}
 
 const create = async function (req, res) {
   const newRestaurant = Restaurant.build(req.body)
   newRestaurant.userId = req.user.id // usuario actualmente autenticado
+  newRestaurant.pinnedAt = req.body.pinned ? new Date() : null
   try {
     const restaurant = await newRestaurant.save()
     res.json(restaurant)
@@ -94,8 +122,28 @@ const destroy = async function (req, res) {
     res.status(500).send(err)
   }
 }
-
+const togglePinned = async function (req, res) {
+  const t = await sequelizeSession.transaction()
+  try {
+    const restaurantPinned = await
+    Restaurant.findByPk(req.params.restaurantId)
+    await Restaurant.update(
+      { pinnedAt: restaurantPinned.pinnedAt ? null : new Date() },
+      { where: { id: restaurantPinned.id } },
+      { transaction: t })
+    await t.commit()
+    const updatedRestaurant = await
+    Restaurant.findByPk(req.params.restaurantId)
+    res.json(updatedRestaurant)
+  } catch (err) {
+    await t.rollback()
+    res.status(500).send(err)
+  }
+}
 const RestaurantController = {
+  getPinnedRestaurants,
+  getNotPinnedRestaurants,
+  togglePinned,
   index,
   indexOwner,
   create,
