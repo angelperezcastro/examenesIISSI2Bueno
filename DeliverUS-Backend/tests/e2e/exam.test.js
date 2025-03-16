@@ -8,7 +8,7 @@ import { getOrderList } from './utils/order'
 import request from 'supertest'
 import timekeeper from 'timekeeper'
 
-/* let totalScore = 0 // Variable global para mantener la puntuación
+let totalScore = 0 // Variable global para mantener la puntuación
 
 const testWeights = {
   'Get all orders (ordered) Should return 401 if not logged in': 0.25,
@@ -44,7 +44,7 @@ afterEach(() => {
 // Imprime la puntuación total después de todas las pruebas
 afterAll(() => {
   console.info(`Total Score: ${totalScore}`)
-}) */
+})
 
 describe('Get all orders (ordered)', () => {
   let restaurant, orders, owner, customer, app
