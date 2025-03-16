@@ -7,7 +7,17 @@ const index = async function (req, res) {
     res.status(500).send(err)
   }
 }
+const create = async (value, { req, res }) => {
+  let newRestaurantCategory = RestaurantCategory.build(req.body)
+  try {
+    newRestaurantCategory = await newRestaurantCategory.save()
+    res.json(newRestaurantCategory)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
 const RestaurantCategoryController = {
-  index
+  index,
+  create
 }
 export default RestaurantCategoryController
