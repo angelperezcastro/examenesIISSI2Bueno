@@ -28,7 +28,8 @@ const indexOwner = async function (req, res) {
         include: [{
           model: RestaurantCategory,
           as: 'restaurantCategory'
-        }]
+        }],
+        order: [['discount', 'ASC']]
       })
     res.json(restaurants)
   } catch (err) {
